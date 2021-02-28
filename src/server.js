@@ -8,6 +8,7 @@ var schema = buildSchema(`
   type Query {
     dogs: [Dog]
     products: [Product]
+    books: [Book]
   },
   type Dog {
     dogId: String!
@@ -21,9 +22,82 @@ var schema = buildSchema(`
     title: String
     category: String!
     price: Float
+  },
+  type Book {
+    bookId: String!
+    title: String
+    genre: String!
+    price: Float
+    author: Author
+  },
+  type Author {
+    authorId: String!
+    name: String!
+    age: Float!
   }
 `);
 
+
+var retrieveBooks = function(_) {
+  return [
+    {
+      bookId: 'a', __typename: 'Book', title: 'To Kill A Mockingbird',
+      genre: 'ALL',
+      price: 13,
+      author: {
+        authorId: 'abc1',
+        name: 'Harper Lee',
+        age: 87,
+      },
+    },
+    {
+      bookId: 'b', __typename: 'Book', title: 'Harry Potter & The Prisoner of Azkabaan',
+      genre: 'ALL',
+      price: 2,
+      author: {
+        authorId: 'abc2',
+        name: 'J.K Rowling',
+        age: 87,
+      },
+    },
+    {
+      bookId: 'c',
+      __typename: 'Book',
+      title: 'Lord Of The Rings',
+      genre: 'ALL',
+      price: 1,
+      author: {
+        authorId: 'abc3',
+        name: 'J.R.R Tolkien',
+        age: 77,
+      },
+    },
+    {
+      bookId: 'd',
+      __typename: 'Book',
+      title: 'Fight Club',
+      genre: 'ALL',
+      price: 0.5,
+      author: {
+        authorId: 'abc4',
+        name: 'Chuck Palahniuk',
+        age: 59,
+      },
+    },
+    {
+      bookId: '3',
+      __typename: 'Book',
+      genre: 'ALL',
+      title: 'A Game Of Thrones',
+      price: 0.25,
+      author: {
+        authorId: 'abc5',
+        name: 'George R.R. Martin',
+        age: 65,
+      },
+    },
+  ];
+}
 
 var retrieveProducts = function(_) {
   return [
@@ -49,6 +123,7 @@ var retrieveDogs = function(_) {
 var root = {
   dogs: retrieveDogs,
   products: retrieveProducts,
+  books: retrieveBooks,
 };
  
 var app = express();
