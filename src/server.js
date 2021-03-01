@@ -9,6 +9,10 @@ var schema = buildSchema(`
     dogs: [Dog]
     products: [Product]
     books: [Book]
+    favouriteBooks: [Book]
+  },
+  type Mutation {
+    toggleFavourite(bookId: String): Book
   },
   type Dog {
     dogId: String!
@@ -28,6 +32,7 @@ var schema = buildSchema(`
     title: String
     genre: String!
     price: Float
+    isFavourite: Boolean!
     author: Author
   },
   type Author {
@@ -37,6 +42,22 @@ var schema = buildSchema(`
   }
 `);
 
+var retrieveFavouriteBooks = function(_) {
+  return [
+    {
+      bookId: 'a', __typename: 'Book', title: 'To Kill A Mockingbird',
+      genre: 'ALL',
+      price: 13,
+      isFavourite: true,
+      author: {
+        authorId: 'abc1',
+        name: 'Harper Lee',
+        age: 87,
+      },
+    },
+  ]
+}
+
 
 var retrieveBooks = function(_) {
   return [
@@ -44,6 +65,7 @@ var retrieveBooks = function(_) {
       bookId: 'a', __typename: 'Book', title: 'To Kill A Mockingbird',
       genre: 'ALL',
       price: 13,
+      isFavourite: true,
       author: {
         authorId: 'abc1',
         name: 'Harper Lee',
@@ -54,6 +76,7 @@ var retrieveBooks = function(_) {
       bookId: 'b', __typename: 'Book', title: 'Harry Potter & The Prisoner of Azkabaan',
       genre: 'ALL',
       price: 2,
+      isFavourite: false,
       author: {
         authorId: 'abc2',
         name: 'J.K Rowling',
@@ -65,6 +88,7 @@ var retrieveBooks = function(_) {
       __typename: 'Book',
       title: 'Lord Of The Rings',
       genre: 'ALL',
+      isFavourite: false,
       price: 1,
       author: {
         authorId: 'abc3',
@@ -78,6 +102,7 @@ var retrieveBooks = function(_) {
       title: 'Fight Club',
       genre: 'ALL',
       price: 0.5,
+      isFavourite: false,
       author: {
         authorId: 'abc4',
         name: 'Chuck Palahniuk',
@@ -90,6 +115,7 @@ var retrieveBooks = function(_) {
       genre: 'ALL',
       title: 'A Game Of Thrones',
       price: 0.25,
+      isFavourite: false,
       author: {
         authorId: 'abc5',
         name: 'George R.R. Martin',
@@ -117,13 +143,25 @@ var retrieveDogs = function(_) {
     { dogId: 'd', __typename: 'Dog', name: 'Buster', age: '8 years', breed: 'German shepherd', price: 0.5 },
     { dogId: '3', __typename: 'Dog', name: null, age: '18 months', breed: 'Cocker spaniel', price: 0.25 },
   ];
-}
+};
+
+var toggleFavourite = function(vars) {
+  var books = retrieveBooks();
+  var book = books.find(book => book.bookId === vars.bookId);
+
+  return {
+    ...book,
+    isFavourite: true,
+  }
+};
  
 // The root provides a resolver function for each API endpoint
 var root = {
   dogs: retrieveDogs,
   products: retrieveProducts,
   books: retrieveBooks,
+  favouriteBooks: retrieveFavouriteBooks,
+  toggleFavourite: toggleFavourite,
 };
  
 var app = express();
