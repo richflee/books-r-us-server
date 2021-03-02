@@ -1,7 +1,9 @@
 var express = require('express');
+var mongoose = require('mongoose');
 var cors = require('cors');
 var { graphqlHTTP } = require('express-graphql');
 var { buildSchema } = require('graphql');
+const mySchema = require('./schemas/index')
  
 // Construct a schema, using GraphQL schema language
 var schema = buildSchema(`
@@ -163,15 +165,44 @@ var root = {
   favouriteBooks: retrieveFavouriteBooks,
   toggleFavourite: toggleFavourite,
 };
+
+mongoose.connect("mongodb+srv://rich:Jobstreet123@booksrus-cluster.s79d5.mongodb.net/booksrus-cluster?retryWrites=true&w=majority&useNewUrlParser=true&useUnifiedTopology=true", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const connect = async function () {
+  try {
+    //  const MongoClient = require('mongodb').MongoClient;
+     const uri = "mongodb+srv://rich:Jobstreet123@booksrus-cluster.s79d5.mongodb.net/booksrus-cluster?retryWrites=true&w=majority&useNewUrlParser=true&useUnifiedTopology=true";
+     mongoose.connect(uri, { useNewUrlParser: true });
+
+     // most probably this is throwing the error. Notice the extra await
+      //  const collection = await client.db("feedback").collection("itinerary");
+
+     // perform actions on the collection object
+    //  client.close();
+  } catch (e) {
+    console.log(`Caught error`,e)
+  }
+};
+
+connect().then(() => {
+  console.log('handle success here');
+}).catch((exception) => {
+  console.log('handle error here: ', exception)
+})
  
 var app = express();
 app.use(cors());
 app.options('*', cors());
+
 app.use('/graphql', graphqlHTTP({
-  schema: schema,
-  rootValue: root,
+  schema: mySchema,
   graphiql: true,
 }));
-app.listen(4000);
-console.log('Running a GraphQL API server at http://localhost:4000/graphql');
+
+app.listen(4000, () => {
+  console.log('Running a GraphQL API server at http://localhost:4000/graphql');
+});
 
